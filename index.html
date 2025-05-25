@@ -255,10 +255,10 @@
             const dateSelect = document.getElementById('date-select');
             const today = new Date();
             
-            // 生成过去7天 + 今天 + 明天（共9天）的日期选项
-            for (let i = 8; i >= 0; i--) {
+            // 生成前9天 + 当天 + 未来1天（共11天）的日期选项
+            for (let i = 10; i >= 0; i--) {
                 const date = new Date(today);
-                date.setDate(today.getDate() - i + 1); // 明天=today+1, 今天=today, 昨天=today-1, 以此类推
+                date.setDate(today.getDate() - i + 1); // 未来1天=today+1, 当天=today, 前1天=today-1, 以此类推
                 const dateStr = formatDate(date);
                 const dateChinese = formatDateToChineseFull(dateStr);
                 
@@ -266,7 +266,7 @@
                 option.value = dateStr;
                 option.textContent = `${dateChinese} (${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()]})`;
                 
-                // 默认选择今天
+                // 默认选择当天
                 if (i === 1) {
                     option.selected = true;
                 }
