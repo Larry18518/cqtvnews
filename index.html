@@ -199,19 +199,24 @@
             return `${year}年${parseInt(month)}月${parseInt(day)}日`;
         }
 
-        // 格式化时间段 - 将开始和结束时间格式化为 "MM月DD日HH:MM-HH:MM"
+        // 格式化时间段 - 将开始和结束时间格式化为 "MM月DD日HH:MM-HH:MM" 或 "MM月DD日HH:MM"
         function formatTimeRange(startTime, endTime) {
             const startDate = new Date(startTime);
-            const endDate = new Date(endTime);
             
             const month = startDate.getMonth() + 1;
             const day = startDate.getDate();
             const startHours = String(startDate.getHours()).padStart(2, '0');
             const startMinutes = String(startDate.getMinutes()).padStart(2, '0');
-            const endHours = String(endDate.getHours()).padStart(2, '0');
-            const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
             
-            return `${month}月${day}日${startHours}:${startMinutes}-${endHours}:${endMinutes}`;
+            if (endTime) {
+                const endDate = new Date(endTime);
+                const endHours = String(endDate.getHours()).padStart(2, '0');
+                const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+                
+                return `${month}月${day}日${startHours}:${startMinutes}-${endHours}:${endMinutes}`;
+            } else {
+                return `${month}月${day}日${startHours}:${startMinutes}`;
+            }
         }
 
         // 检查节目是否正在播出
@@ -442,4 +447,3 @@
     </script>
 </body>
 </html>
-    
