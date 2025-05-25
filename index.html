@@ -65,7 +65,7 @@
                 opacity: 1;
             }
             .btn-group {
-                min-width: 215px; /* 与收看+复制链接按钮总宽度匹配 */
+                min-width: 215px;
             }
         }
     </style>
@@ -91,7 +91,7 @@
                 <div class="w-full sm:w-auto">
                     <div class="relative">
                         <select id="date-select" class="select-arrow block w-full rounded-md border-gray-300 shadow-sm py-2 pl-3 pr-8 focus:border-primary focus:ring focus:ring-primary/20 focus:outline-none sm:text-sm">
-                            <!-- JavaScript 将动态填充选项 -->
+                            <!-- 选项将由JavaScript动态填充 -->
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <i class="fa fa-chevron-down text-xs"></i>
@@ -134,7 +134,7 @@
 
         <!-- 节目列表 -->
         <div id="program-list" class="grid grid-cols-1 gap-4">
-            <!-- 节目项将通过 JavaScript 动态生成 -->
+            <!-- 节目项将通过JavaScript动态生成 -->
             <div class="text-center py-16 text-gray-500">
                 <i class="fa fa-film text-5xl mb-4 opacity-30"></i>
                 <p class="text-lg">请选择日期并点击"获取节目列表"按钮</p>
@@ -179,7 +179,7 @@
     </div>
 
     <script>
-        // 格式化日期函数 - 将日期对象格式化为 YYYY-MM-DD
+        // 工具函数
         function formatDate(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -187,67 +187,48 @@
             return `${year}-${month}-${day}`;
         }
 
-        // 格式化日期为中文格式 - 只显示月和日 (MM月DD日)，去除前导零
         function formatDateToChineseMonthDay(dateStr) {
             const [, month, day] = dateStr.split('-');
             return `${parseInt(month)}月${parseInt(day)}日`;
         }
 
-        // 格式化日期为中文格式 - 显示完整年月日 (YYYY年MM月DD日)，去除前导零
         function formatDateToChineseFull(dateStr) {
             const [year, month, day] = dateStr.split('-');
             return `${year}年${parseInt(month)}月${parseInt(day)}日`;
         }
 
-        // 格式化时间段 - 将开始和结束时间格式化为 "MM月DD日HH:MM-HH:MM" 或 "MM月DD日HH:MM"
         function formatTimeRange(startTime, endTime) {
-            const startDate = new Date(startTime);
-            
-            const month = startDate.getMonth() + 1;
-            const day = startDate.getDate();
-            const startHours = String(startDate.getHours()).padStart(2, '0');
-            const startMinutes = String(startDate.getMinutes()).padStart(2, '0');
-            
-            if (endTime) {
-                const endDate = new Date(endTime);
-                const endHours = String(endDate.getHours()).padStart(2, '0');
-                const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+            try {
+                const startDate = new Date(startTime);
+                const month = startDate.getMonth() + 1;
+                const day = startDate.getDate();
+                const startHours = String(startDate.getHours()).padStart(2, '0');
+                const startMinutes = String(startDate.getMinutes()).padStart(2, '0');
                 
-                return `${month}月${day}日${startHours}:${startMinutes}-${endHours}:${endMinutes}`;
-            } else {
-                return `${month}月${day}日${startHours}:${startMinutes}`;
+                if (endTime) {
+                    const endDate = new Date(endTime);
+                    const endHours = String(endDate.getHours()).padStart(2, '0');
+                    const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+                    return `${month}月${day}日${startHours}:${startMinutes}-${endHours}:${endMinutes}`;
+                } else {
+                    return `${month}月${day}日${startHours}:${startMinutes}`;
+                }
+            } catch (error) {
+                console.error('格式化时间范围出错:', error);
+                return '未知时间';
             }
         }
 
-        // 检查节目是否正在播出
         function isProgramLive(programStartTime, programEndTime) {
-            const now = new Date();
-            const startTime = new Date(programStartTime);
-            const endTime = new Date(programEndTime);
-            
-            return now >= startTime && now < endTime;
-        }
-
-        // 显示复制成功提示
-        function showCopyToast() {
-            const toast = document.getElementById('copy-toast');
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // 复制链接到剪贴板
-        function copyUrlToClipboard(url) {
-            navigator.clipboard.writeText(url)
-                .then(() => {
-                    showCopyToast();
-                })
-                .catch(err => {
-                    console.error('复制链接失败:', err);
-                    alert('复制失败，请手动复制链接');
-                });
+            try {
+                const now = new Date();
+                const startTime = new Date(programStartTime);
+                const endTime = new Date(programEndTime);
+                return now >= startTime && now < endTime;
+            } catch (error) {
+                console.error('判断节目是否直播出错:', error);
+                return false;
+            }
         }
 
         // 初始化日期选择器
@@ -255,10 +236,9 @@
             const dateSelect = document.getElementById('date-select');
             const today = new Date();
             
-            // 生成前9天 + 当天 + 未来1天（共11天）的日期选项
             for (let i = 10; i >= 0; i--) {
                 const date = new Date(today);
-                date.setDate(today.getDate() - i + 1); // 未来1天=today+1, 当天=today, 前1天=today-1, 以此类推
+                date.setDate(today.getDate() - i + 1);
                 const dateStr = formatDate(date);
                 const dateChinese = formatDateToChineseFull(dateStr);
                 
@@ -266,7 +246,6 @@
                 option.value = dateStr;
                 option.textContent = `${dateChinese} (${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()]})`;
                 
-                // 默认选择当天
                 if (i === 1) {
                     option.selected = true;
                 }
@@ -274,11 +253,25 @@
                 dateSelect.appendChild(option);
             }
             
-            // 更新标题中的日期（只显示月和日，无前导零）
             document.getElementById('program-date-title').textContent = formatDateToChineseMonthDay(dateSelect.value);
         }
 
-        // 获取节目列表（带重试机制）
+        // 复制URL到剪贴板
+        function copyUrlToClipboard(url) {
+            navigator.clipboard.writeText(url)
+                .then(() => {
+                    const toast = document.getElementById('copy-toast');
+                    toast.classList.add('show');
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('复制失败:', err);
+                });
+        }
+
+        // 获取节目列表
         async function fetchPrograms(date) {
             const programList = document.getElementById('program-list');
             const noData = document.getElementById('no-data');
@@ -287,7 +280,6 @@
             const fetchBtn = document.getElementById('fetch-btn');
             const loadingIndicator = document.getElementById('loading-indicator');
             
-            // 显示加载状态
             programList.innerHTML = '';
             noData.classList.add('hidden');
             errorMessage.classList.add('hidden');
@@ -295,20 +287,14 @@
             loadingIndicator.classList.remove('hidden');
             
             try {
-                // 重试配置
                 const maxRetries = 3;
                 let retries = 0;
-                let lastError = null;
                 
                 while (retries < maxRetries) {
                     try {
-                        // 构建API URL
                         const apiUrl = `https://cqxyinterface.cbgcloud.com/api/xy/toc/v1/queryTvRadioPrograms?appCode=FABU_YUNSHI&companyId=cqxwzx&userId=358598525698247cqxwzx&productId=6B1BEE01515143AFAF290F6044E54A89&serviceCode=YUNSHI_XSGL&date=${date}&rid=5ece08285c3a956d1c7f992a`;
-                        
-                        // 添加随机查询参数，避免缓存
                         const urlWithCacheBust = `${apiUrl}&_=${Date.now()}`;
                         
-                        // 发送请求
                         const response = await fetch(urlWithCacheBust);
                         
                         if (!response.ok) {
@@ -317,57 +303,40 @@
                         
                         const data = await response.json();
                         
-                        // 更新标题中的日期（只显示月和日，无前导零）
                         document.getElementById('program-date-title').textContent = formatDateToChineseMonthDay(date);
                         
-                        // 检查是否有节目数据
                         if (!data || !data.data || data.data.length === 0) {
                             noData.classList.remove('hidden');
                             programCount.textContent = '0';
                             return;
                         }
                         
-                        // 清空列表并添加节目项
                         programList.innerHTML = '';
                         data.data.forEach(program => {
                             addProgramItem(program);
                         });
                         
-                        // 更新节目计数
                         programCount.textContent = data.data.length;
-                        
-                        // 请求成功，退出重试循环
                         return;
                         
                     } catch (error) {
                         console.error(`获取节目数据时出错 (尝试 ${retries + 1}/${maxRetries}):`, error);
-                        lastError = error;
                         retries++;
                         
-                        // 如果不是最后一次尝试，则等待一段时间再重试
                         if (retries < maxRetries) {
-                            const delay = 1000 * retries; // 指数退避：1秒、2秒、4秒...
+                            const delay = 1000 * retries;
                             console.log(`等待 ${delay/1000} 秒后重试...`);
                             await new Promise(resolve => setTimeout(resolve, delay));
                         }
                     }
                 }
                 
-                // 所有重试都失败了
-                throw lastError;
+                throw new Error('所有重试都失败了');
                 
             } catch (error) {
-                // 显示错误信息
                 errorMessage.classList.remove('hidden');
-                
-                // 自定义错误消息
-                let errorText = `获取节目数据失败: ${error.message}`;
-                errorText += '<br><span class="font-bold text-red-600">已尝试多次，仍无法获取数据</span>';
-                
-                document.getElementById('error-text').innerHTML = errorText;
-                
+                document.getElementById('error-text').textContent = `获取节目数据失败: ${error.message}`;
             } finally {
-                // 隐藏加载状态
                 fetchBtn.disabled = false;
                 loadingIndicator.classList.add('hidden');
             }
@@ -375,74 +344,73 @@
 
         // 添加节目项到列表
         function addProgramItem(program) {
-            const programList = document.getElementById('program-list');
-            
-            // 提取节目名称，移除[回看]标签
-            let programName = program.programName || '';
-            programName = programName.replace(/\[回看\]/g, '').trim();
-            
-            // 如果节目名称是program-over或checkpoint，则显示时间段
-            if (programName === 'program-over' || programName === 'checkpoint') {
-                programName = formatTimeRange(program.programStartTime, program.programEndTime);
-            }
-            
-            // 检查节目是否正在播出
-            const isLive = isProgramLive(program.programStartTime, program.programEndTime);
-            
-            // 创建节目项元素
-            const programItem = document.createElement('div');
-            programItem.className = `bg-white rounded-lg card-shadow p-4 hover-scale ${isLive ? 'program-live' : ''}`;
-            
-            // 设置内容
-            programItem.innerHTML = `
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-lg text-dark">
-                            <i class="fa fa-television text-primary mr-2"></i>
-                            ${programName}
-                        </h3>
-                        <div class="text-sm text-gray-500 mt-1">
-                            <i class="fa fa-clock-o mr-1"></i>
-                            ${formatTimeRange(program.programStartTime, program.programEndTime)}
+            try {
+                const programList = document.getElementById('program-list');
+                
+                let programName = program.programName || '';
+                programName = programName.replace(/\[回看\]/g, '').trim();
+                
+                if (programName === 'program-over' || programName === 'checkpoint') {
+                    programName = formatTimeRange(program.programStartTime, program.programEndTime);
+                }
+                
+                const isLive = isProgramLive(program.programStartTime, program.programEndTime);
+                const programItem = document.createElement('div');
+                programItem.className = `bg-white rounded-lg card-shadow p-4 hover-scale ${isLive ? 'program-live' : ''}`;
+                
+                const programTime = formatTimeRange(program.programStartTime, program.programEndTime);
+                
+                programItem.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-lg text-dark">
+                                <i class="fa fa-television text-primary mr-2"></i>
+                                ${programName}
+                            </h3>
+                            <div class="text-sm text-gray-500 mt-1">
+                                <i class="fa fa-clock-o mr-1"></i>
+                                ${programTime}
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            ${program.backUrl ? 
+                                `<a href="player.html?media=${program.backUrl}&programName=${encodeURIComponent(programName)}&programTime=${encodeURIComponent(programTime)}" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center btn-group justify-center">
+                                    <i class="fa fa-play-circle mr-2"></i> 收看
+                                </a>` : 
+                                `<span class="btn-group ${isLive ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600'} font-medium py-2 px-4 rounded-md flex items-center justify-center">
+                                    ${isLive ? 
+                                        '<i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> 正在播出' : 
+                                        '<i class="fa fa-clock-o mr-2"></i> 尚未播出'
+                                    }
+                                </span>`
+                            }
                         </div>
                     </div>
-                    <div class="flex-shrink-0">
-                        ${program.backUrl ? 
-                            `<div class="flex gap-2">
-                                <a href="${program.backUrl}" target="_blank" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center">
-                                    <i class="fa fa-play-circle mr-2"></i> 收看
-                                </a>
-                                <button onclick="copyUrlToClipboard('${program.backUrl}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-sm flex items-center">
-                                    <i class="fa fa-copy mr-2"></i> 复制链接
-                                </button>
-                            </div>` : 
-                            `<span class="btn-group ${isLive ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600'} font-medium py-2 px-4 rounded-md flex items-center justify-center">
-                                ${isLive ? 
-                                    '<i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> 正在播出' : 
-                                    '<i class="fa fa-clock-o mr-2"></i> 尚未播出'
-                                }
-                            </span>`
-                        }
-                    </div>
-                </div>
-            `;
-            
-            // 添加到列表
-            programList.appendChild(programItem);
+                `;
+                
+                programList.appendChild(programItem);
+            } catch (error) {
+                console.error('添加节目项出错:', error);
+            }
         }
 
         // 初始化页面
         document.addEventListener('DOMContentLoaded', () => {
-            initDateSelector();
-            
-            // 绑定获取按钮点击事件
-            document.getElementById('fetch-btn').addEventListener('click', () => {
-                const selectedDate = document.getElementById('date-select').value;
-                fetchPrograms(selectedDate);
-            });
-            
-            // 默认加载今天的节目
-            fetchPrograms(document.getElementById('date-select').value);
+            try {
+                initDateSelector();
+                
+                document.getElementById('fetch-btn').addEventListener('click', () => {
+                    const selectedDate = document.getElementById('date-select').value;
+                    fetchPrograms(selectedDate);
+                });
+                
+                fetchPrograms(document.getElementById('date-select').value);
+            } catch (error) {
+                console.error('页面初始化出错:', error);
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.classList.remove('hidden');
+                document.getElementById('error-text').textContent = `页面初始化失败: ${error.message}`;
+            }
         });
     </script>
 </body>
