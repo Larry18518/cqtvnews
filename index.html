@@ -47,6 +47,26 @@
                 background-color: rgba(11, 94, 215, 0.1);
                 border-left: 3px solid #0B5ED7;
             }
+            .toast-notification {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #333;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 50;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .toast-notification.show {
+                opacity: 1;
+            }
+            .btn-group {
+                min-width: 215px; /* 与收看+复制链接按钮总宽度匹配 */
+            }
         }
     </style>
 </head>
@@ -90,11 +110,25 @@
             </div>
         </div>
 
+        <!-- 提示信息 -->
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fa fa-info-circle text-blue-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        使用github.io网站可能无法直接观看，可复制链接后手动粘贴到浏览器地址栏或者其他视频播放器观看。
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- 节目列表标题 -->
         <div class="flex flex-wrap items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-dark flex items-center">
                 <i class="fa fa-list-ul text-primary mr-2"></i>
-                <span id="program-date-title">5月25日</span> 节目列表
+                <span id="program-date-title">5月26日</span> 节目列表
             </h2>
         </div>
 
@@ -139,6 +173,11 @@
         </div>
     </footer>
 
+    <!-- 复制成功提示框 -->
+    <div id="copy-toast" class="toast-notification">
+        当前节目视频链接已复制到剪贴板。
+    </div>
+
     <script>
         // 格式化日期函数 - 将日期对象格式化为 YYYY-MM-DD
         function formatDate(date) {
@@ -160,41 +199,50 @@
             return `${year}年${parseInt(month)}月${parseInt(day)}日`;
         }
 
-        // 格式化时间段 - 将开始和结束时间格式化为 "MM月DD日HH:MM" 或 "MM月DD日HH:MM-HH:MM"
+        // 格式化时间段 - 将开始和结束时间格式化为 "MM月DD日HH:MM-HH:MM"
         function formatTimeRange(startTime, endTime) {
             const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
             
             const month = startDate.getMonth() + 1;
             const day = startDate.getDate();
             const startHours = String(startDate.getHours()).padStart(2, '0');
             const startMinutes = String(startDate.getMinutes()).padStart(2, '0');
+            const endHours = String(endDate.getHours()).padStart(2, '0');
+            const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
             
-            let timeRange = `${month}月${day}日${startHours}:${startMinutes}`;
-            
-            // 如果有结束时间，则添加到时间段中
-            if (endTime) {
-                const endDate = new Date(endTime);
-                const endHours = String(endDate.getHours()).padStart(2, '0');
-                const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
-                timeRange += `-${endHours}:${endMinutes}`;
-            }
-            
-            return timeRange;
+            return `${month}月${day}日${startHours}:${startMinutes}-${endHours}:${endMinutes}`;
         }
 
         // 检查节目是否正在播出
         function isProgramLive(programStartTime, programEndTime) {
             const now = new Date();
             const startTime = new Date(programStartTime);
-            
-            // 如果没有结束时间，则认为节目不在播出
-            if (!programEndTime) {
-                return false;
-            }
-            
             const endTime = new Date(programEndTime);
             
             return now >= startTime && now < endTime;
+        }
+
+        // 显示复制成功提示
+        function showCopyToast() {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 复制链接到剪贴板
+        function copyUrlToClipboard(url) {
+            navigator.clipboard.writeText(url)
+                .then(() => {
+                    showCopyToast();
+                })
+                .catch(err => {
+                    console.error('复制链接失败:', err);
+                    alert('复制失败，请手动复制链接');
+                });
         }
 
         // 初始化日期选择器
@@ -202,24 +250,10 @@
             const dateSelect = document.getElementById('date-select');
             const today = new Date();
             
-            // 清空现有选项
-            dateSelect.innerHTML = '';
-            
-            // 首先添加未来一天的日期选项
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
-            const tomorrowStr = formatDate(tomorrow);
-            const tomorrowChinese = formatDateToChineseFull(tomorrowStr);
-            
-            const tomorrowOption = document.createElement('option');
-            tomorrowOption.value = tomorrowStr;
-            tomorrowOption.textContent = `${tomorrowChinese} (${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][tomorrow.getDay()]})`;
-            dateSelect.appendChild(tomorrowOption);
-            
-            // 然后添加当天和过去7天的日期选项
-            for (let i = 0; i < 8; i++) {
+            // 生成过去7天 + 今天 + 明天（共9天）的日期选项
+            for (let i = 8; i >= 0; i--) {
                 const date = new Date(today);
-                date.setDate(today.getDate() - i);
+                date.setDate(today.getDate() - i + 1); // 明天=today+1, 今天=today, 昨天=today-1, 以此类推
                 const dateStr = formatDate(date);
                 const dateChinese = formatDateToChineseFull(dateStr);
                 
@@ -227,8 +261,8 @@
                 option.value = dateStr;
                 option.textContent = `${dateChinese} (${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()]})`;
                 
-                // 默认选择当天
-                if (i === 0) {
+                // 默认选择今天
+                if (i === 1) {
                     option.selected = true;
                 }
                 
@@ -369,15 +403,19 @@
                     </div>
                     <div class="flex-shrink-0">
                         ${program.backUrl ? 
-                            `<a href="${program.backUrl}" target="_blank" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center">
-                                <i class="fa fa-play-circle mr-2"></i> 收看
-                            </a>` : 
-                            isLive ?
-                            `<span class="bg-primary/10 text-primary font-medium py-2 px-4 rounded-md flex items-center">
-                                <i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> 正在播出
-                            </span>` :
-                            `<span class="bg-gray-200 text-gray-600 font-medium py-2 px-4 rounded-md flex items-center">
-                                <i class="fa fa-clock-o mr-2"></i> 尚未播出
+                            `<div class="flex gap-2">
+                                <a href="${program.backUrl}" target="_blank" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center">
+                                    <i class="fa fa-play-circle mr-2"></i> 收看
+                                </a>
+                                <button onclick="copyUrlToClipboard('${program.backUrl}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-sm flex items-center">
+                                    <i class="fa fa-copy mr-2"></i> 复制链接
+                                </button>
+                            </div>` : 
+                            `<span class="btn-group ${isLive ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600'} font-medium py-2 px-4 rounded-md flex items-center justify-center">
+                                ${isLive ? 
+                                    '<i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> 正在播出' : 
+                                    '<i class="fa fa-clock-o mr-2"></i> 尚未播出'
+                                }
                             </span>`
                         }
                     </div>
@@ -403,4 +441,5 @@
         });
     </script>
 </body>
-</html>    
+</html>
+    
