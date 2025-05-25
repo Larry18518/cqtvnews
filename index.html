@@ -72,7 +72,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
     <header class="bg-primary text-white shadow-lg">
-        <div class="container mx-auto px-4 py-6">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
             <div class="flex items-center">
                 <i class="fa fa-play-circle-o text-3xl mr-3"></i>
                 <h1 class="text-2xl md:text-3xl font-bold">重庆新闻频道回放获取工具</h1>
@@ -82,7 +82,7 @@
 
     <main class="container mx-auto px-4 py-8">
         <!-- 日期选择卡片 -->
-        <div class="bg-white rounded-xl card-shadow p-6 mb-8 transition-all duration-300 hover:shadow-lg">
+        <div id="date-section" class="bg-white rounded-xl card-shadow p-6 mb-8 transition-all duration-300 hover:shadow-lg">
             <h2 class="text-xl font-semibold mb-4 flex items-center">
                 <i class="fa fa-calendar text-primary mr-2"></i>
                 选择日期
@@ -125,7 +125,7 @@
         </div>
 
         <!-- 节目列表标题 -->
-        <div class="flex flex-wrap items-center justify-between mb-6">
+        <div id="program-title-section" class="flex flex-wrap items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-dark flex items-center">
                 <i class="fa fa-list-ul text-primary mr-2"></i>
                 <span id="program-date-title">5月26日</span> 节目列表
@@ -142,7 +142,7 @@
         </div>
 
         <!-- 节目总数统计 -->
-        <div class="text-right text-sm text-gray-500 mt-4 mb-8">
+        <div id="program-count-section" class="text-right text-sm text-gray-500 mt-4 mb-8">
             共 <span id="program-count">0</span> 个节目
         </div>
 
@@ -165,6 +165,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- 视频播放区域 -->
+        <div id="video-section" class="hidden">
+            <h2 id="video-title" class="text-2xl font-bold text-dark mb-4 text-center">视频标题</h2>
+            <video id="video-player" width="100%" controls>
+                <source id="video-source" src="" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <button id="download-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
+                    <i class="fa fa-download mr-2"></i> 下载
+                </button>
+                <button id="copy-link-btn" class="bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
+                    <i class="fa fa-link mr-2"></i> 复制链接
+                </button>
+                <button id="back-to-list-btn" class="bg-white text-primary font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg">返回节目列表</button>
+            </div>
+        </div>
     </main>
 
     <footer class="bg-dark text-white py-4 mt-12">
@@ -177,6 +196,9 @@
     <div id="copy-toast" class="toast-notification">
         当前节目视频链接已复制到剪贴板。
     </div>
+
+    <!-- 提示框 -->
+    <div id="toast" class="toast-notification">当前节目视频链接已复制到剪贴板。</div>
 
     <script>
         // 工具函数
@@ -374,9 +396,9 @@
                         </div>
                         <div class="flex-shrink-0">
                             ${program.backUrl ? 
-                                `<a href="player.html?media=${program.backUrl}&programName=${encodeURIComponent(programName)}&programTime=${encodeURIComponent(programTime)}" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center btn-group justify-center">
+                                `<button onclick="showVideo('${program.backUrl}', '${programName}', '${programTime}')" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center btn-group justify-center">
                                     <i class="fa fa-play-circle mr-2"></i> 收看
-                                </a>` : 
+                                </button>` : 
                                 `<span class="btn-group ${isLive ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600'} font-medium py-2 px-4 rounded-md flex items-center justify-center">
                                     ${isLive ? 
                                         '<i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> 正在播出' : 
@@ -393,6 +415,110 @@
                 console.error('添加节目项出错:', error);
             }
         }
+
+        // 显示视频播放区域
+        function showVideo(mediaUrl, programName, programTime) {
+            const dateSection = document.getElementById('date-section');
+            const programList = document.getElementById('program-list');
+            const videoSection = document.getElementById('video-section');
+            const videoSource = document.getElementById('video-source');
+            const videoPlayer = document.getElementById('video-player');
+            const videoTitle = document.getElementById('video-title');
+            const programTitleSection = document.getElementById('program-title-section');
+            const programCountSection = document.getElementById('program-count-section');
+
+            // 隐藏不需要的元素
+            dateSection.classList.add('hidden');
+            programList.classList.add('hidden');
+            programTitleSection.classList.add('hidden');
+            programCountSection.classList.add('hidden');
+            
+            // 显示视频播放区域
+            videoSection.classList.remove('hidden');
+
+            if (mediaUrl) {
+                videoSource.src = mediaUrl;
+                videoPlayer.load();
+                videoPlayer.play().catch(err => {
+                    console.error("自动播放失败:", err);
+                    // 这里可以添加用户交互提示，引导用户手动点击播放
+                });
+            }
+
+            // 设置视频标题
+            if (programName && programTime) {
+                if (programName === programTime) {
+                    videoTitle.textContent = programTime;
+                } else {
+                    videoTitle.textContent = `${programTime} ${programName}`;
+                }
+            }
+        }
+
+        // 返回节目列表
+        function backToProgramList() {
+            const dateSection = document.getElementById('date-section');
+            const programList = document.getElementById('program-list');
+            const videoSection = document.getElementById('video-section');
+            const programTitleSection = document.getElementById('program-title-section');
+            const programCountSection = document.getElementById('program-count-section');
+            const videoPlayer = document.getElementById('video-player');
+
+            // 停止视频播放并重置
+            if (videoPlayer) {
+                videoPlayer.pause();
+                videoPlayer.currentTime = 0;
+                videoPlayer.src = '';
+            }
+
+            // 显示节目列表相关元素
+            dateSection.classList.remove('hidden');
+            programList.classList.remove('hidden');
+            programTitleSection.classList.remove('hidden');
+            programCountSection.classList.remove('hidden');
+            
+            // 隐藏视频播放区域
+            videoSection.classList.add('hidden');
+        }
+
+        // 下载按钮点击事件
+        const downloadBtn = document.getElementById('download-btn');
+        downloadBtn.addEventListener('click', () => {
+            const videoSource = document.getElementById('video-source');
+            const mediaUrl = videoSource.src;
+            if (mediaUrl) {
+                const link = document.createElement('a');
+                link.href = mediaUrl;
+                link.download = 'video.mp4';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+
+        // 复制链接按钮点击事件
+        const copyLinkBtn = document.getElementById('copy-link-btn');
+        copyLinkBtn.addEventListener('click', () => {
+            const videoSource = document.getElementById('video-source');
+            const mediaUrl = videoSource.src;
+            if (mediaUrl) {
+                navigator.clipboard.writeText(mediaUrl)
+                    .then(() => {
+                        const toast = document.getElementById('toast');
+                        toast.classList.add('show');
+                        setTimeout(() => {
+                            toast.classList.remove('show');
+                        }, 3000);
+                    })
+                    .catch(err => {
+                        console.error('复制失败: ', err);
+                    });
+            }
+        });
+
+        // 返回节目列表按钮点击事件
+        const backToProgramListBtn = document.getElementById('back-to-list-btn');
+        backToProgramListBtn.addEventListener('click', backToProgramList);
 
         // 初始化页面
         document.addEventListener('DOMContentLoaded', () => {
