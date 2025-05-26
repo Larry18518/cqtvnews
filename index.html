@@ -65,7 +65,17 @@
                 opacity: 1;
             }
             .btn-group {
-                min-width: 215px;
+                /* 移除固定最小宽度 */
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+            @screen sm {
+                .btn-group {
+                    /* 在大屏幕上恢复原来的样式 */
+                    width: auto;
+                    min-width: 160px;
+                }
             }
         }
     </style>
@@ -178,7 +188,7 @@
 
     <footer class="bg-dark text-white py-4 mt-12">
         <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
-            © 2025 <span data-lang-key="copyright_company">重庆广播电视集团（总台）第1眼TV</span> & Larry18518 | 版权所有
+            © 2025 <span data-lang-key="copyright_company">重庆广播电视集团（总台）第1眼TV</span> & Larry18518 | <span data-lang-key="copyright">版权所有</span>
         </div>
     </footer>
 
@@ -191,7 +201,7 @@
         // 多语言翻译数据
         const translations = {
             'zh-CN': {
-                'title': '重庆新闻频道回放获取工具',
+                'title': '重庆新闻频道<br>回放获取工具',
                 'select_date': '选择日期',
                 'get_program_list': '获取节目列表',
                 'program_list_title': '节目列表',
@@ -207,7 +217,8 @@
                 'not_yet_broadcast': '尚未播出',
                 'day_names': ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
                 'month_name': '月',
-                'day_name': '日'
+                'day_name': '日',
+                'copyright': '版权所有'
             },
             'en': {
                 'title': 'CQTV NEWS Replay Tool',
@@ -226,10 +237,11 @@
                 'not_yet_broadcast': 'Not Yet Broadcast',
                 'day_names': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 'month_name': '月', // 日期格式化会使用Intl API，这里只作为占位
-                'day_name': '日'  // 日期格式化会使用Intl API，这里只作为占位
+                'day_name': '日',  // 日期格式化会使用Intl API，这里只作为占位
+                'copyright': 'All rights reserved'
             },
             'ja': {
-                'title': 'CQTV NEWS 番組再生ツール',
+                'title': 'CQTV NEWS<br>番組再生ツール',
                 'select_date': '日付を選んでください',
                 'get_program_list': '番組一覧',
                 'program_list_title': '番組表',
@@ -245,7 +257,8 @@
                 'not_yet_broadcast': '未放送',
                 'day_names': ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
                 'month_name': '月',
-                'day_name': '日'
+                'day_name': '日',
+                'copyright': '著作権所有'
             }
         };
 
@@ -576,7 +589,7 @@
                                 ${programTime}
                             </div>
                         </div>
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 w-full sm:w-auto">
                             ${program.backUrl ? 
                                 `<button onclick="copyUrlToClipboard('${program.backUrl}')" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center btn-group justify-center">
                                     <i class="fa fa-copy mr-2"></i> ${translations[currentLang].copy_link}
