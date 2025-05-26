@@ -72,20 +72,20 @@
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
     <header class="bg-primary text-white shadow-lg">
-        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+        <div class="container mx-auto px-4 py-6">
             <div class="flex items-center">
                 <i class="fa fa-play-circle-o text-3xl mr-3"></i>
-                <h1 class="text-2xl md:text-3xl font-bold">重庆新闻频道回放获取工具</h1>
+                <h1 class="text-2xl md:text-3xl font-bold" data-lang-key="title">重庆新闻频道回放获取工具</h1>
             </div>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8">
         <!-- 日期选择卡片 -->
-        <div id="date-section" class="bg-white rounded-xl card-shadow p-6 mb-8 transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white rounded-xl card-shadow p-6 mb-8 transition-all duration-300 hover:shadow-lg">
             <h2 class="text-xl font-semibold mb-4 flex items-center">
                 <i class="fa fa-calendar text-primary mr-2"></i>
-                选择日期
+                <span data-lang-key="select_date">选择日期</span>
             </h2>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div class="w-full sm:w-auto">
@@ -101,7 +101,7 @@
                 <div class="flex-shrink-0 self-end">
                     <button id="fetch-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
                         <i class="fa fa-search mr-2"></i>
-                        获取节目列表
+                        <span data-lang-key="get_program_list">获取节目列表</span>
                     </button>
                 </div>
                 <div id="loading-indicator" class="hidden">
@@ -117,18 +117,20 @@
                     <i class="fa fa-info-circle text-blue-500"></i>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm text-blue-700">
-                        使用github.io网站可能无法直接观看，可复制链接后手动粘贴到浏览器地址栏或者其他视频播放器观看。<br>距离当前日期最远的一天的节目回放可能会出现部分无法打开的情况，出现以上情况则说明对应内容已被重庆台删除。
+                    <p class="text-sm text-blue-700" data-lang-key="tip_message">
+                        距离当前日期最远的一天的节目回放可能会出现部分无法打开的情况，这说明对应内容已被重庆台删除。
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- 节目列表标题 -->
-        <div id="program-title-section" class="flex flex-wrap items-center justify-between mb-6">
+        <div class="flex flex-wrap items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-dark flex items-center">
                 <i class="fa fa-list-ul text-primary mr-2"></i>
-                <span id="program-date-title">5月26日</span> 节目列表
+                <span data-lang-key="program_list_title">节目列表</span>
+                <!-- 添加这个元素 -->
+                <span id="program-date-title" class="ml-2 text-primary"></span>
             </h2>
         </div>
 
@@ -137,19 +139,19 @@
             <!-- 节目项将通过JavaScript动态生成 -->
             <div class="text-center py-16 text-gray-500">
                 <i class="fa fa-film text-5xl mb-4 opacity-30"></i>
-                <p class="text-lg">请选择日期并点击"获取节目列表"按钮</p>
+                <p class="text-lg" data-lang-key="select_date_tip">请选择日期并点击"获取节目列表"按钮</p>
             </div>
         </div>
 
         <!-- 节目总数统计 -->
-        <div id="program-count-section" class="text-right text-sm text-gray-500 mt-4 mb-8">
-            共 <span id="program-count">0</span> 个节目
+        <div class="text-right text-sm text-gray-500 mt-4 mb-8">
+            <span data-lang-key="total_programs">共</span> <span id="program-count">0</span> <span data-lang-key="program_count_text">个节目</span>
         </div>
 
         <!-- 没有数据提示 -->
         <div id="no-data" class="hidden text-center py-16 text-gray-500">
             <i class="fa fa-exclamation-circle text-5xl mb-4 text-gray-400"></i>
-            <p class="text-lg">没有找到该日期的节目数据</p>
+            <p class="text-lg" data-lang-key="no_data_message">没有找到该日期的节目数据</p>
         </div>
 
         <!-- 错误提示 -->
@@ -165,42 +167,159 @@
                 </div>
             </div>
         </div>
-
-        <!-- 视频播放区域 -->
-        <div id="video-section" class="hidden">
-            <h2 id="video-title" class="text-2xl font-bold text-dark mb-4 text-center">视频标题</h2>
-            <video id="video-player" width="100%" controls>
-                <source id="video-source" src="" type="video/mp4">
-                您的浏览器不支持视频播放。
-            </video>
-            
-            <div class="flex flex-wrap justify-center gap-4 mt-6">
-                <button id="download-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
-                    <i class="fa fa-download mr-2"></i> 下载
-                </button>
-                <button id="copy-link-btn" class="bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
-                    <i class="fa fa-link mr-2"></i> 复制链接
-                </button>
-                <button id="back-to-list-btn" class="bg-white text-primary font-medium py-2 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg">返回节目列表</button>
-            </div>
-        </div>
     </main>
+
+    <!-- 多语言选择 -->
+    <div class="container mx-auto px-4 text-center text-gray-400 text-sm mb-2">
+        <span class="cursor-pointer" onclick="changeLanguage('zh-CN')">中文</span> │
+        <span class="cursor-pointer" onclick="changeLanguage('en')">English</span> │
+        <span class="cursor-pointer" onclick="changeLanguage('ja')">日本語</span>
+    </div>
 
     <footer class="bg-dark text-white py-4 mt-12">
         <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
-            © 2025 重庆广播电视集团（总台）第1眼TV & Larry18518 | 版权所有
+            © 2025 <span data-lang-key="copyright_company">重庆广播电视集团（总台）第1眼TV</span> & Larry18518 | 版权所有
         </div>
     </footer>
 
     <!-- 复制成功提示框 -->
     <div id="copy-toast" class="toast-notification">
-        当前节目视频链接已复制到剪贴板。
+        <span data-lang-key="copy_toast_message">当前节目视频链接已复制到剪贴板，可粘贴到浏览器地址栏或者其他视频播放器观看。</span>
     </div>
 
-    <!-- 提示框 -->
-    <div id="toast" class="toast-notification">当前节目视频链接已复制到剪贴板。</div>
-
     <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'title': '重庆新闻频道回放获取工具',
+                'select_date': '选择日期',
+                'get_program_list': '获取节目列表',
+                'program_list_title': '节目列表',
+                'tip_message': '距离当前日期最远的一天的节目回放可能会出现部分无法打开的情况，这说明对应内容已被重庆台删除。',
+                'select_date_tip': '请选择日期并点击"获取节目列表"按钮',
+                'total_programs': '共',
+                'program_count_text': '个节目',
+                'no_data_message': '没有找到该日期的节目数据',
+                'copyright_company': '重庆广播电视集团（总台）第1眼TV',
+                'copy_toast_message': '当前节目视频链接已复制到剪贴板，可粘贴到浏览器地址栏或者其他视频播放器观看。',
+                'copy_link': '复制链接',
+                'live_broadcast': '正在播出',
+                'not_yet_broadcast': '尚未播出',
+                'day_names': ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+                'month_name': '月',
+                'day_name': '日'
+            },
+            'en': {
+                'title': 'CQTV NEWS Replay Tool',
+                'select_date': 'Select Date',
+                'get_program_list': 'Get Program List',
+                'program_list_title': 'Program List',
+                'tip_message': 'The replay of the program on the day farthest from the current date may be partially unavailable, and the above situation means that the corresponding content has been deleted by Chongqing TV.',
+                'select_date_tip': 'Please select a date and click the "Get Program List" button',
+                'total_programs': 'Total',
+                'program_count_text': 'programs',
+                'no_data_message': 'No program data was found for this date.',
+                'copyright_company': 'Chongqing Radio and Television Group The First Sight TV',
+                'copy_toast_message': 'The current program video link has been copied to the clipboard. You can paste it into the browser address bar or other video players to watch.',
+                'copy_link': 'Copy Link',
+                'live_broadcast': 'Live Now',
+                'not_yet_broadcast': 'Not Yet Broadcast',
+                'day_names': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                'month_name': '月', // 日期格式化会使用Intl API，这里只作为占位
+                'day_name': '日'  // 日期格式化会使用Intl API，这里只作为占位
+            },
+            'ja': {
+                'title': 'CQTV NEWS 番組再生ツール',
+                'select_date': '時間を選んでください',
+                'get_program_list': '番組一覧',
+                'program_list_title': '番組表',
+                'tip_message': '現在の日付から最も遠い日の番組の再生は部分的に利用できない場合があり、上記の状況は、対応するコンテンツが重慶テレビによって削除されたことを意味します。',
+                'select_date_tip': '日付を選択し、「番組一覧を取得」ボタンをクリックしてください',
+                'total_programs': '合計',
+                'program_count_text': '番組',
+                'no_data_message': 'この日付の番組データが見つかりませんでした。',
+                'copyright_company': '重慶テレビファーストアイTV',
+                'copy_toast_message': '現在の番組のビデオリンクがクリップボードにコピーされました。ブラウザのアドレスバーまたは他のビデオプレーヤーに貼り付けて視聴できます。',
+                'copy_link': 'リンクをコピー',
+                'live_broadcast': '放送中',
+                'not_yet_broadcast': '未放送',
+                'day_names': ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+                'month_name': '月',
+                'day_name': '日'
+            }
+        };
+
+        // 节目名称翻译数据
+        const programNameTranslations = {
+            '第1眼新闻上午版': {
+                'en': 'The First Sight News at Morning',
+                'ja': '9時のファーストアイニュース'
+            },
+            '第1眼新闻午间版': {
+                'en': 'The First Sight News at Noon',
+                'ja': '正午のファーストアイニュース'
+            },
+            '第1眼新闻下午版': {
+                'en': 'The First Sight News at Afternoon',
+                'ja': '15時のファーストアイニュース'
+            },
+            '6点档 天天630': {
+                'en': 'Everyday 630 (Part 1)',
+                'ja': 'デーデー630（第1部）'
+            },
+            '7点档 天天630': {
+                'en': 'Everyday 630 (Part 2)',
+                'ja': 'デーデー630（第2部）'
+            },
+            '重庆新闻联播 今日关注': {
+                'en': 'Chongqing News Bulletin and Today Focus',
+                'ja': '重慶ニュースときょうフォーカス'
+            },
+            '网罗天下晚间版': {
+                'en': 'Global Insight at Night',
+                'ja': 'ナショナルニュースネット（夜8時）'
+            },
+            '财经壹资讯': {
+                'en': 'First Finance',
+                'ja': 'ファーストファイナンシャルニュース'
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh-CN';
+
+        // 增强的语言切换函数 - 修改以在切换语言时刷新节目列表
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            // 翻译带有data-lang-key属性的元素
+            const elements = document.querySelectorAll('[data-lang-key]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // 重新初始化日期选择器以更新语言
+            initDateSelector();
+
+            // 如果已有节目数据，刷新节目列表
+            const programList = document.getElementById('program-list');
+            const hasPrograms = programList.innerHTML && !programList.innerHTML.includes('请选择日期并点击"获取节目列表"按钮');
+
+            if (hasPrograms) {
+                fetchPrograms(document.getElementById('date-select').value);
+            } else {
+                // 否则更新按钮文本等
+                updateProgramListButtons();
+            }
+
+            // 更新日期显示格式
+            updateDateDisplay();
+        }
+
         // 工具函数
         function formatDate(date) {
             const year = date.getFullYear();
@@ -209,31 +328,44 @@
             return `${year}-${month}-${day}`;
         }
 
-        function formatDateToChineseMonthDay(dateStr) {
-            const [, month, day] = dateStr.split('-');
-            return `${parseInt(month)}月${parseInt(day)}日`;
-        }
-
-        function formatDateToChineseFull(dateStr) {
+        // 本地化日期格式化 - 修改以符合特定格式要求
+        function formatDateToLocalized(dateStr, formatType = 'monthDay') {
             const [year, month, day] = dateStr.split('-');
-            return `${year}年${parseInt(month)}月${parseInt(day)}日`;
+            const dateObj = new Date(year, month - 1, day);
+            const weekday = translations[currentLang].day_names[dateObj.getDay()];
+
+            if (formatType === 'full') {
+                // 使用Intl.DateTimeFormat进行本地化格式化
+                const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                return new Intl.DateTimeFormat(currentLang, options).format(dateObj);
+            } else {
+                if (currentLang === 'en') {
+                    return `${month.padStart(2, '0')}/${day.padStart(2, '0')}`;
+                } else {
+                    return `${parseInt(month)}${translations[currentLang].month_name}${parseInt(day)}${translations[currentLang].day_name}`;
+                }
+            }
         }
 
+        // 本地化时间范围格式化
         function formatTimeRange(startTime, endTime) {
             try {
                 const startDate = new Date(startTime);
-                const month = startDate.getMonth() + 1;
-                const day = startDate.getDate();
-                const startHours = String(startDate.getHours()).padStart(2, '0');
-                const startMinutes = String(startDate.getMinutes()).padStart(2, '0');
-                
-                if (endTime) {
-                    const endDate = new Date(endTime);
-                    const endHours = String(endDate.getHours()).padStart(2, '0');
-                    const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
-                    return `${month}月${day}日${startHours}:${startMinutes}-${endHours}:${endMinutes}`;
+                const endDate = endTime ? new Date(endTime) : null;
+
+                // 格式化选项
+                const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+                // 格式化开始时间
+                const startDateStr = formatDateToLocalized(formatDate(startDate), 'monthDay');
+                const startTimeStr = new Intl.DateTimeFormat(currentLang, timeOptions).format(startDate);
+
+                if (endDate) {
+                    // 如果有结束时间，格式化结束时间
+                    const endTimeStr = new Intl.DateTimeFormat(currentLang, timeOptions).format(endDate);
+                    return `${startDateStr} ${startTimeStr}-${endTimeStr}`;
                 } else {
-                    return `${month}月${day}日${startHours}:${startMinutes}`;
+                    return `${startDateStr} ${startTimeStr}`;
                 }
             } catch (error) {
                 console.error('格式化时间范围出错:', error);
@@ -257,40 +389,84 @@
         function initDateSelector() {
             const dateSelect = document.getElementById('date-select');
             const today = new Date();
-            
+
+            // 清空现有选项
+            dateSelect.innerHTML = '';
+
             for (let i = 10; i >= 0; i--) {
                 const date = new Date(today);
                 date.setDate(today.getDate() - i + 1);
                 const dateStr = formatDate(date);
-                const dateChinese = formatDateToChineseFull(dateStr);
-                
+
+                // 使用本地化格式
+                const dateLocalized = formatDateToLocalized(dateStr, 'full');
+
                 const option = document.createElement('option');
                 option.value = dateStr;
-                option.textContent = `${dateChinese} (${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()]})`;
-                
+                option.textContent = dateLocalized;
+
                 if (i === 1) {
                     option.selected = true;
                 }
-                
+
                 dateSelect.appendChild(option);
             }
-            
-            document.getElementById('program-date-title').textContent = formatDateToChineseMonthDay(dateSelect.value);
+
+            // 更新日期显示
+            updateDateDisplay();
+        }
+
+        // 更新日期显示
+        function updateDateDisplay() {
+            const dateSelect = document.getElementById('date-select');
+            const programDateTitle = document.getElementById('program-date-title');
+
+            if (programDateTitle && dateSelect.value) {
+                programDateTitle.textContent = formatDateToLocalized(dateSelect.value);
+            }
         }
 
         // 复制URL到剪贴板
         function copyUrlToClipboard(url) {
             navigator.clipboard.writeText(url)
-                .then(() => {
+               .then(() => {
                     const toast = document.getElementById('copy-toast');
                     toast.classList.add('show');
                     setTimeout(() => {
                         toast.classList.remove('show');
                     }, 3000);
                 })
-                .catch(err => {
+               .catch(err => {
                     console.error('复制失败:', err);
                 });
+        }
+
+        // 更新节目列表中的按钮文本
+        function updateProgramListButtons() {
+            const programItems = document.querySelectorAll('#program-list > div');
+
+            programItems.forEach(item => {
+                const button = item.querySelector('button');
+                const span = item.querySelector('span');
+
+                if (button) {
+                    button.innerHTML = `
+                        <i class="fa fa-copy mr-2"></i> ${translations[currentLang].copy_link}
+                    `;
+                }
+
+                if (span) {
+                    if (span.innerHTML.includes('正在播出') || span.innerHTML.includes('Live Now') || span.innerHTML.includes('放送中')) {
+                        span.innerHTML = `
+                            <i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> ${translations[currentLang].live_broadcast}
+                        `;
+                    } else {
+                        span.innerHTML = `
+                            <i class="fa fa-clock-o mr-2"></i> ${translations[currentLang].not_yet_broadcast}
+                        `;
+                    }
+                }
+            });
         }
 
         // 获取节目列表
@@ -301,50 +477,51 @@
             const programCount = document.getElementById('program-count');
             const fetchBtn = document.getElementById('fetch-btn');
             const loadingIndicator = document.getElementById('loading-indicator');
-            
+
             programList.innerHTML = '';
             noData.classList.add('hidden');
             errorMessage.classList.add('hidden');
             fetchBtn.disabled = true;
             loadingIndicator.classList.remove('hidden');
-            
+
             try {
                 const maxRetries = 3;
                 let retries = 0;
-                
+
                 while (retries < maxRetries) {
                     try {
                         const apiUrl = `https://cqxyinterface.cbgcloud.com/api/xy/toc/v1/queryTvRadioPrograms?appCode=FABU_YUNSHI&companyId=cqxwzx&userId=358598525698247cqxwzx&productId=6B1BEE01515143AFAF290F6044E54A89&serviceCode=YUNSHI_XSGL&date=${date}&rid=5ece08285c3a956d1c7f992a`;
                         const urlWithCacheBust = `${apiUrl}&_=${Date.now()}`;
-                        
+
                         const response = await fetch(urlWithCacheBust);
-                        
+
                         if (!response.ok) {
                             throw new Error(`HTTP错误，状态码: ${response.status}`);
                         }
-                        
+
                         const data = await response.json();
-                        
-                        document.getElementById('program-date-title').textContent = formatDateToChineseMonthDay(date);
-                        
+
+                        // 更新日期显示
+                        updateDateDisplay();
+
                         if (!data || !data.data || data.data.length === 0) {
                             noData.classList.remove('hidden');
                             programCount.textContent = '0';
                             return;
                         }
-                        
+
                         programList.innerHTML = '';
                         data.data.forEach(program => {
                             addProgramItem(program);
                         });
-                        
+
                         programCount.textContent = data.data.length;
                         return;
-                        
+
                     } catch (error) {
                         console.error(`获取节目数据时出错 (尝试 ${retries + 1}/${maxRetries}):`, error);
                         retries++;
-                        
+
                         if (retries < maxRetries) {
                             const delay = 1000 * retries;
                             console.log(`等待 ${delay/1000} 秒后重试...`);
@@ -352,9 +529,9 @@
                         }
                     }
                 }
-                
+
                 throw new Error('所有重试都失败了');
-                
+
             } catch (error) {
                 errorMessage.classList.remove('hidden');
                 document.getElementById('error-text').textContent = `获取节目数据失败: ${error.message}`;
@@ -368,20 +545,25 @@
         function addProgramItem(program) {
             try {
                 const programList = document.getElementById('program-list');
-                
+
                 let programName = program.programName || '';
                 programName = programName.replace(/\[回看\]/g, '').trim();
-                
+
                 if (programName === 'program-over' || programName === 'checkpoint') {
                     programName = formatTimeRange(program.programStartTime, program.programEndTime);
                 }
-                
+
+                // 翻译节目名称
+                if (currentLang !== 'zh-CN' && programNameTranslations[programName]) {
+                    programName = programNameTranslations[programName][currentLang];
+                }
+
                 const isLive = isProgramLive(program.programStartTime, program.programEndTime);
                 const programItem = document.createElement('div');
                 programItem.className = `bg-white rounded-lg card-shadow p-4 hover-scale ${isLive ? 'program-live' : ''}`;
-                
+
                 const programTime = formatTimeRange(program.programStartTime, program.programEndTime);
-                
+
                 programItem.innerHTML = `
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div class="flex-1">
@@ -396,140 +578,36 @@
                         </div>
                         <div class="flex-shrink-0">
                             ${program.backUrl ? 
-                                `<button onclick="showVideo('${program.backUrl}', '${programName}', '${programTime}')" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center btn-group justify-center">
-                                    <i class="fa fa-play-circle mr-2"></i> 收看
+                                `<button onclick="copyUrlToClipboard('${program.backUrl}')" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow hover:shadow-md flex items-center btn-group justify-center">
+                                    <i class="fa fa-copy mr-2"></i> ${translations[currentLang].copy_link}
                                 </button>` : 
                                 `<span class="btn-group ${isLive ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600'} font-medium py-2 px-4 rounded-md flex items-center justify-center">
                                     ${isLive ? 
-                                        '<i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> 正在播出' : 
-                                        '<i class="fa fa-clock-o mr-2"></i> 尚未播出'
+                                        `<i class="fa fa-circle text-xs text-red-500 mr-2 animate-pulse"></i> ${translations[currentLang].live_broadcast}` : 
+                                        `<i class="fa fa-clock-o mr-2"></i> ${translations[currentLang].not_yet_broadcast}`
                                     }
                                 </span>`
                             }
                         </div>
                     </div>
                 `;
-                
+
                 programList.appendChild(programItem);
             } catch (error) {
                 console.error('添加节目项出错:', error);
             }
         }
 
-        // 显示视频播放区域
-        function showVideo(mediaUrl, programName, programTime) {
-            const dateSection = document.getElementById('date-section');
-            const programList = document.getElementById('program-list');
-            const videoSection = document.getElementById('video-section');
-            const videoSource = document.getElementById('video-source');
-            const videoPlayer = document.getElementById('video-player');
-            const videoTitle = document.getElementById('video-title');
-            const programTitleSection = document.getElementById('program-title-section');
-            const programCountSection = document.getElementById('program-count-section');
-
-            // 隐藏不需要的元素
-            dateSection.classList.add('hidden');
-            programList.classList.add('hidden');
-            programTitleSection.classList.add('hidden');
-            programCountSection.classList.add('hidden');
-            
-            // 显示视频播放区域
-            videoSection.classList.remove('hidden');
-
-            if (mediaUrl) {
-                videoSource.src = mediaUrl;
-                videoPlayer.load();
-                videoPlayer.play().catch(err => {
-                    console.error("自动播放失败:", err);
-                    // 这里可以添加用户交互提示，引导用户手动点击播放
-                });
-            }
-
-            // 设置视频标题
-            if (programName && programTime) {
-                if (programName === programTime) {
-                    videoTitle.textContent = programTime;
-                } else {
-                    videoTitle.textContent = `${programTime} ${programName}`;
-                }
-            }
-        }
-
-        // 返回节目列表
-        function backToProgramList() {
-            const dateSection = document.getElementById('date-section');
-            const programList = document.getElementById('program-list');
-            const videoSection = document.getElementById('video-section');
-            const programTitleSection = document.getElementById('program-title-section');
-            const programCountSection = document.getElementById('program-count-section');
-            const videoPlayer = document.getElementById('video-player');
-
-            // 停止视频播放并重置
-            if (videoPlayer) {
-                videoPlayer.pause();
-                videoPlayer.currentTime = 0;
-                videoPlayer.src = '';
-            }
-
-            // 显示节目列表相关元素
-            dateSection.classList.remove('hidden');
-            programList.classList.remove('hidden');
-            programTitleSection.classList.remove('hidden');
-            programCountSection.classList.remove('hidden');
-            
-            // 隐藏视频播放区域
-            videoSection.classList.add('hidden');
-        }
-
-        // 下载按钮点击事件
-        const downloadBtn = document.getElementById('download-btn');
-        downloadBtn.addEventListener('click', () => {
-            const videoSource = document.getElementById('video-source');
-            const mediaUrl = videoSource.src;
-            if (mediaUrl) {
-                const link = document.createElement('a');
-                link.href = mediaUrl;
-                link.download = 'video.mp4';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        });
-
-        // 复制链接按钮点击事件
-        const copyLinkBtn = document.getElementById('copy-link-btn');
-        copyLinkBtn.addEventListener('click', () => {
-            const videoSource = document.getElementById('video-source');
-            const mediaUrl = videoSource.src;
-            if (mediaUrl) {
-                navigator.clipboard.writeText(mediaUrl)
-                    .then(() => {
-                        const toast = document.getElementById('toast');
-                        toast.classList.add('show');
-                        setTimeout(() => {
-                            toast.classList.remove('show');
-                        }, 3000);
-                    })
-                    .catch(err => {
-                        console.error('复制失败: ', err);
-                    });
-            }
-        });
-
-        // 返回节目列表按钮点击事件
-        const backToProgramListBtn = document.getElementById('back-to-list-btn');
-        backToProgramListBtn.addEventListener('click', backToProgramList);
-
         // 初始化页面
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 initDateSelector();
-                
+
                 document.getElementById('fetch-btn').addEventListener('click', () => {
                     const selectedDate = document.getElementById('date-select').value;
                     fetchPrograms(selectedDate);
                 });
-                
+
                 fetchPrograms(document.getElementById('date-select').value);
             } catch (error) {
                 console.error('页面初始化出错:', error);
