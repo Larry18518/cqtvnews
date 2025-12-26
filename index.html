@@ -65,17 +65,27 @@
                 opacity: 1;
             }
             .btn-group {
-                /* 移除固定最小宽度 */
                 width: 100%;
                 display: flex;
                 justify-content: center;
             }
             @screen sm {
                 .btn-group {
-                    /* 在大屏幕上恢复原来的样式 */
                     width: auto;
                     min-width: 160px;
                 }
+            }
+            /* 新增：纯文字按钮样式（和之前的新闻频道回放按钮样式一致） */
+            .text-link-btn {
+                color: white;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 6px 12px;
+                border-radius: 4px;
+                transition: background-color 0.3s ease;
+            }
+            .text-link-btn:hover {
+                background-color: rgba(255, 255, 255, 0.2);
             }
         }
     </style>
@@ -83,9 +93,15 @@
 <body class="bg-gray-50 min-h-screen font-sans">
     <header class="bg-primary text-white shadow-lg">
         <div class="container mx-auto px-4 py-6">
-            <div class="flex items-center">
-                <i class="fa fa-play-circle-o text-3xl mr-3"></i>
-                <h1 class="text-2xl md:text-3xl font-bold" data-lang-key="title">重庆新闻频道回放获取工具</h1>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fa fa-play-circle-o text-3xl mr-3"></i>
+                    <h1 class="text-2xl md:text-3xl font-bold" data-lang-key="title">重庆新闻频道回放获取工具</h1>
+                </div>
+                <!-- 新增：纯文字的重庆广播回听按钮（无图标、纯文字） -->
+                <a href="https://larry18518.github.io/cqradio/" class="text-link-btn" target="_blank">
+                    重庆广播回听
+                </a>
             </div>
         </div>
     </header>
@@ -139,7 +155,6 @@
             <h2 class="text-2xl font-bold text-dark flex items-center">
                 <i class="fa fa-list-ul text-primary mr-2"></i>
                 <span data-lang-key="program_list_title">节目列表</span>
-                <!-- 添加这个元素 -->
                 <span id="program-date-title" class="ml-2 text-primary"></span>
             </h2>
         </div>
@@ -236,8 +251,8 @@
                 'live_broadcast': 'Live Now',
                 'not_yet_broadcast': 'Not Yet Broadcast',
                 'day_names': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                'month_name': '月', // 日期格式化会使用Intl API，这里只作为占位
-                'day_name': '日',  // 日期格式化会使用Intl API，这里只作为占位
+                'month_name': '月',
+                'day_name': '日',
                 'copyright': 'All rights reserved'
             },
             'ja': {
