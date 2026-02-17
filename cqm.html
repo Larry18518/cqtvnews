@@ -41,7 +41,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            /* 新增：确保body不会超出视口 */
             width: 100%;
             overflow-x: hidden;
         }
@@ -73,7 +72,6 @@
             transition: var(--transition);
             margin-bottom: 2rem;
             width: 100%;
-            /* 新增：确保容器不会超出视口 */
             max-width: 100%;
         }
         
@@ -119,7 +117,6 @@
         .playback-area {
             margin-top: 1.5rem;
             width: 100%;
-            /* 新增：确保回放区域宽度100% */
             max-width: 100%;
         }
         
@@ -149,7 +146,6 @@
             gap: 1rem 1rem;
             align-items: center;
             width: 100%;
-            /* 新增：确保表单不会超出容器 */
             max-width: 100%;
         }
         
@@ -383,20 +379,20 @@
             }
             
             .container {
-                padding: 1.5rem 1rem; /* 减少内边距，避免超出 */
+                padding: 1.5rem 1rem;
                 width: 100%;
-                max-width: 100%; /* 确保容器宽度100% */
+                max-width: 100%;
                 box-sizing: border-box;
             }
             
             .playback-form {
-                grid-template-columns: 70px 1fr; /* 缩小标签宽度 */
+                grid-template-columns: 70px 1fr;
                 grid-template-rows: auto auto auto auto;
-                gap: 0.8rem 0.5rem; /* 减少列间距 */
+                gap: 0.8rem 0.5rem;
                 width: 100%;
-                max-width: 100%; /* 确保表单宽度100% */
+                max-width: 100%; 
                 box-sizing: border-box;
-                padding: 0 0.2rem; /* 微小内边距，避免贴边 */
+                padding: 0 0.2rem; 
             }
             
             .time-label:first-of-type {
@@ -427,23 +423,21 @@
                 grid-column: 2 / 3;
                 grid-row: 3 / 4;
                 flex-wrap: nowrap;
-                gap: 0.3rem; /* 减少输入框间距 */
+                gap: 0.3rem;
                 width: 100%;
                 overflow-x: auto;
                 padding-bottom: 0.2rem;
-                /* 新增：隐藏横向滚动条但保留滚动功能 */
                 scrollbar-width: none;
                 -ms-overflow-style: none;
             }
-            /* 隐藏webkit内核的滚动条 */
             .duration-input-group::-webkit-scrollbar {
                 display: none;
             }
             .duration-input {
-                min-width: 50px; /* 进一步缩小最小宽度 */
+                min-width: 50px; 
                 flex: 1;
-                padding: 0.65rem 0.6rem; /* 减少内边距 */
-                font-size: 0.8rem; /* 缩小字体 */
+                padding: 0.65rem 0.6rem;
+                font-size: 0.8rem;
             }
             #copy-playback-btn {
                 grid-column: 2 / 3;
@@ -488,12 +482,10 @@
                 text-align: left;
                 padding-right: 0;
                 font-size: 0.85rem;
-                /* 新增：限制标签文本换行 */
                 word-wrap: break-word;
                 white-space: normal;
             }
             
-            /* 移动端下调整输入框样式 */
             .time-input {
                 min-width: unset;
                 width: 100%;
@@ -503,15 +495,15 @@
 
         @media (max-width: 480px) {
             body {
-                padding: 1.5rem 0.8rem 3rem; /* 减少左右内边距 */
+                padding: 1.5rem 0.8rem 3rem;
                 width: 100%;
-                max-width: 100%; /* 确保body宽度100% */
+                max-width: 100%; 
                 box-sizing: border-box;
-                overflow-x: hidden; /* 隐藏横向滚动 */
+                overflow-x: hidden; 
             }
             
             .container {
-                padding: 1.25rem 0.8rem; /* 进一步减少内边距 */
+                padding: 1.25rem 0.8rem;
                 max-width: 100%;
             }
             
@@ -528,18 +520,18 @@
             
             .time-input {
                 min-width: unset;
-                padding: 0.65rem 0.6rem; /* 减少内边距 */
+                padding: 0.65rem 0.6rem;
                 font-size: 0.85rem;
             }
             
             .duration-input {
-                padding: 0.65rem 0.5rem; /* 进一步减少内边距 */
+                padding: 0.65rem 0.5rem;
                 font-size: 0.8rem;
-                min-width: 45px; /* 最小宽度再缩小 */
+                min-width: 45px;
             }
             
             .duration-unit-text {
-                font-size: 0.75rem; /* 缩小单位文本 */
+                font-size: 0.75rem;
                 white-space: nowrap;
             }
             
@@ -1054,3 +1046,4 @@
     </script>
 </body>
 </html>
+
